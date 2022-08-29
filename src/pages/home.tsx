@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { Header } from '../components/header';
+import { SongCard } from '../components/song-card';
 import { getSongs, Song } from '../services/song';
 
 export const Home: React.FC = () => {
@@ -11,28 +12,15 @@ export const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen px-4 py-16">
+    <div className="flex min-h-screen px-4 py-16 bg-gray-50">
       <div className="flex flex-col max-w-xl mx-auto">
         <Header />
 
-        <main>
-          <ul>
+        <main className="flex flex-col mt-8">
+          <ul className="space-y-4">
             {songs.map((song) => (
               <li key={song.id}>
-                <div>
-                  <h3>{song.title}</h3>
-                  <a href={song.url} target="_blank" rel="noopener noreferrer">
-                    Ver no YouTube
-                  </a>
-                  <div className="flex items-center gap-2">
-                    <img
-                      className="object-cover w-8 h-8 rounded-full"
-                      src={song.sender.avatarUrl || 'https://dummyimage.com/32x32'}
-                      alt={song.sender.name}
-                    />
-                    <p>{song.sender.name}</p>
-                  </div>
-                </div>
+                <SongCard song={song} />
               </li>
             ))}
           </ul>
