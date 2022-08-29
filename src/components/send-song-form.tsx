@@ -10,7 +10,7 @@ const songSchema = Yup.object().shape({
   title: Yup.string().required('O título é obrigatório'),
   url: Yup.string()
     .url('Deve ser um link')
-    .matches(/^(https\:\/\/youtu\.be)\/[\w\d]+$/, 'Deve ser um link do YouTube')
+    .matches(/^https\:\/\/youtu\.be\/[\w\d\-\_]+$/, 'Deve ser um link do YouTube')
     .required('O link é obrigatório'),
 });
 
