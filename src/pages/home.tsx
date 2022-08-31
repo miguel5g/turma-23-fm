@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 
 import { Header } from '../components/header';
 import { SongCard } from '../components/song-card';
+import { useAuth } from '../hooks/use-auth';
 import { getSongs, Song } from '../services/song';
 
 export const Home: React.FC = () => {
   const [songs, setSongs] = useState<Song[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    getSongs().then((data) => setSongs(data as any));
+    getSongs(user?.id).then((data) => setSongs(data as any));
   }, []);
 
   return (

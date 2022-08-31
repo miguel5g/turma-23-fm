@@ -1,5 +1,6 @@
-import { FiThumbsUp } from 'react-icons/fi';
-import { Song } from '../services/song';
+import { FiThumbsUp, FiYoutube as FiYouTube } from 'react-icons/fi';
+import { useAuth } from '../hooks/use-auth';
+import { Song, toggleFavoriteSong } from '../services/song';
 
 interface SongCardProps {
   song: Song;
@@ -8,11 +9,17 @@ interface SongCardProps {
 const videoIdRegEx = /^https\:\/\/youtu\.be\/([\w\d\-\_]+)$/;
 
 export const SongCard: React.FC<SongCardProps> = ({ song }) => {
+  // const [isLoading, setLoading] =
+  const { isAuthenticated, user } = useAuth();
+
   let videoId: string | null = null;
 
   if (videoIdRegEx.test(song.url)) {
     videoId = (song.url.match(videoIdRegEx) as RegExpMatchArray)[1];
-    console.log(song.url, videoId)
+  }
+
+  function handleToggleLike() {
+    toggleFavoriteSong(song.id, user?.id, song.likeId);
   }
 
   return (
@@ -41,10 +48,16 @@ export const SongCard: React.FC<SongCardProps> = ({ song }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Ver no YouTube
+          <FiYouTube />
+          <span>YouTube</span>
         </a>
-        <button className="button button-secondary" disabled>
+        <button
+          className="button button-secondary"
+          onClick={handleToggleLike}
+          disabled={!isAuthenticated}
+        >
           <FiThumbsUp />
+          <span>{song.likeCount}</span>
         </button>
       </div>
     </div>
