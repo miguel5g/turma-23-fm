@@ -14,7 +14,7 @@ export const Pool: React.FC = () => {
 
   const { id } = useParams();
 
-  const { isLoading, pool } = usePool(id!);
+  const { isLoading, pool, songs } = usePool(id!);
 
   if (isLoading) {
     return (
@@ -70,7 +70,7 @@ export const Pool: React.FC = () => {
         <ul className="mt-8 space-y-4">
           {/** @todo improve empty songs list feedback */}
 
-          {pool.songs.map((song) => (
+          {songs.map((song) => (
             <li key={song.id}>
               <SongCard song={song} />
             </li>

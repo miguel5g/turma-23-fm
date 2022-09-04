@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FiSend } from 'react-icons/fi';
 
 import { useAuth } from '../hooks/use-auth';
-import { addSong } from '../libs/pools';
+import { addSong } from '../libs/songs';
 
 interface AddSongFormProps {
   poolId: string;
