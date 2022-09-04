@@ -72,7 +72,7 @@ export const Pool: React.FC = () => {
 
           {songs.map((song) => (
             <li key={song.id}>
-              <SongCard song={song} />
+              <SongCard poolId={pool.id} song={song} />
             </li>
           ))}
         </ul>

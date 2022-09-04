@@ -12,6 +12,7 @@ export interface RawSong {
   title: string;
   url: string;
   likes?: RawSongLikes;
+  likeCount?: number;
   sender: User;
 }
 

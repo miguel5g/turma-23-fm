@@ -1,4 +1,4 @@
-import { push, ref } from 'firebase/database';
+import { push, ref, runTransaction } from 'firebase/database';
 
 import { database } from '../services/firebase';
 import { RawSong, Song } from '../typings';
@@ -21,4 +21,27 @@ async function addSong(poolId: string, song: SongInput): Promise<void> {
   await push(songsRef, song);
 }
 
-export { addSong, mapRawSongs };
+async function toggleSongLike(poolId: string, songId: string, userId: string): Promise<void> {
+  const songRef = ref(database, `pools/${poolId}/songs/${songId}`);
+
+  await runTransaction(songRef, (song: RawSong) => {
+    if (!song) return song;
+
+    if (song.likes && song.likes[userId]) {
+      song.likeCount = (song.likeCount || 1) - 1;
+      delete song.likes[userId];
+
+      return song;
+    }
+
+    song.likeCount = (song.likeCount || 0) + 1;
+    song.likes = {
+      ...(song.likes || {}),
+      [userId]: true,
+    };
+
+    return song;
+  });
+}
+
+export { addSong, mapRawSongs, toggleSongLike };

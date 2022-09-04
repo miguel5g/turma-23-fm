@@ -26,13 +26,15 @@ export function usePool(id: string): UsePoolType {
   useEffect(() => {
     if (!pool) return;
 
-    const unsubscribe = onValue(ref(database, `pools/${id}/songs`), (snapshot) => {
+    const songsRef = ref(database, `pools/${id}/songs`);
+
+    const unsubscribe = onValue(songsRef, (snapshot) => {
       if (!snapshot.exists()) setSongs([]);
 
       const rawSongs: { [key: string]: RawSong } = snapshot.val();
-      const songs: Song[] = Object.entries(rawSongs || {}).map(([songId, rawSong]) =>
-        mapRawSongs(songId, rawSong)
-      );
+      const songs: Song[] = Object.entries(rawSongs || {})
+        .map(([songId, rawSong]) => mapRawSongs(songId, rawSong))
+        .sort((a, b) => b.likeCount - a.likeCount);
 
       setSongs(songs);
     });

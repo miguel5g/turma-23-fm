@@ -1,19 +1,29 @@
+import { useState } from 'react';
 import { FiThumbsUp, FiYoutube as FiYouTube } from 'react-icons/fi';
 
 import { useAuth } from '../hooks/use-auth';
+import { toggleSongLike } from '../libs/songs';
 import { getIdFromUrl } from '../libs/video-url';
 import { Song } from '../typings';
 
 interface SongCardProps {
+  poolId: string;
   song: Song;
 }
 
-export const SongCard: React.FC<SongCardProps> = ({ song }) => {
-  const { isAuthenticated } = useAuth();
+export const SongCard: React.FC<SongCardProps> = ({ poolId, song }) => {
+  const [isLikeButtonDisabled, setLikeButtonDisabled] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   let videoId = getIdFromUrl(song.url);
 
-  function handleToggleLike() {}
+  function handleToggleLike() {
+    if (!user) return;
+
+    setLikeButtonDisabled(true);
+
+    toggleSongLike(poolId, song.id, user.id).finally(() => setLikeButtonDisabled(false));
+  }
 
   return (
     <div className="flex flex-col p-6 bg-white rounded-lg shadow-sm">
@@ -48,7 +58,7 @@ export const SongCard: React.FC<SongCardProps> = ({ song }) => {
           type="button"
           className="button button-secondary"
           onClick={handleToggleLike}
-          disabled={!isAuthenticated}
+          disabled={!isAuthenticated || isLikeButtonDisabled}
         >
           <FiThumbsUp />
           <span>{song.likeCount}</span>
