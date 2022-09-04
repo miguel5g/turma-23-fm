@@ -1,5 +1,12 @@
 import { createContext, useEffect, useState } from 'react';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import {
+  AuthProvider,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithPopup,
+  signOut,
+  User as AuthUser,
+} from 'firebase/auth';
 
 import { auth } from '../services/firebase';
 import { User } from '../typings';
@@ -8,7 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: User | null;
-  signIn: () => Promise<void>;
+  signIn: (provider?: AuthProvider) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -18,8 +25,6 @@ interface AuthContextProviderProps {
 
 export const authContext = createContext({} as AuthContextType);
 
-const googleProvider = new GoogleAuthProvider();
-
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
   const [isLoading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -27,29 +32,29 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ childr
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (state) => {
       setLoading(false);
+
       if (!state) setUser(null);
-      else {
-        setUser({
-          id: state.uid,
-          avatarUrl: state.photoURL,
-          name: state.displayName || 'Unknown',
-        });
-      }
+      else successfullyAuth(state);
     });
 
     return () => unsubscribe();
   }, []);
 
-  async function handleSignIn() {
-    await signInWithPopup(auth, googleProvider)
-      .then(({ user }) =>
-        setUser({
-          id: user.uid,
-          avatarUrl: user.photoURL,
-          name: user.displayName || 'Unknown',
-        })
-      )
-      .catch((error) => console.log(error));
+  function successfullyAuth(user: AuthUser) {
+    setUser({
+      id: user.uid,
+      avatarUrl: user.photoURL,
+      name: user.displayName || 'Anônimo',
+    });
+  }
+
+  async function handleSignIn(provider?: AuthProvider) {
+    if (!provider) {
+      await signInAnonymously(auth).then(({ user }) => successfullyAuth(user));
+      return;
+    }
+
+    await signInWithPopup(auth, provider).then(({ user }) => successfullyAuth(user));
   }
 
   async function handleSignOut() {

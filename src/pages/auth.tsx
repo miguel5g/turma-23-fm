@@ -1,7 +1,14 @@
 import toast from 'react-hot-toast';
-import { useState } from 'react';
-import { FcGoogle } from 'react-icons/fc';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { FaGithub, FaGoogle, FaUserSecret } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  AuthErrorCodes,
+  AuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 
 import PodcastAudienceImage from '../assets/podcast-audience.svg';
 import { useAuth } from '../hooks/use-auth';
@@ -10,22 +17,35 @@ export const Auth: React.FC = () => {
   const [isLoading, setLoading] = useState(false);
   const { isAuthenticated, signIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  /** @todo implements redirect to by params feature */
-  if (isAuthenticated) navigate('/');
+  const { callbackUrl } = (location.state || {}) as { callbackUrl?: string };
 
-  function handleSingIn() {
+  useEffect(() => {
+    if (isAuthenticated) navigate('/');
+  }, []);
+
+  function handleSingIn(provider?: AuthProvider) {
     setLoading(true);
 
-    signIn()
-      .then(() => navigate('/'))
-      .catch(() => toast.error('Algo deu errado...'))
+    signIn(provider)
+      .then(() => navigate(callbackUrl || '/', { replace: !!callbackUrl }))
+      .catch((error: unknown) => {
+        if (!(error instanceof FirebaseError)) return toast.error('Algo deu errado...');
+
+        let message = 'Algo deu errado...';
+
+        if (error.code === AuthErrorCodes.NEED_CONFIRMATION)
+          message = 'Seu e-mail já foi utilizado com outro provedor';
+
+        toast.error(message);
+      })
       .finally(() => setLoading(false));
   }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="flex flex-col w-full max-w-sm p-6 m-auto bg-white rounded-lg shadow-md">
+      <div className="flex flex-col w-full max-w-md m-auto">
         <img src={PodcastAudienceImage} alt="Pessoas ouvindo um podcast" className=" max-h-32" />
 
         <h1 className="mt-6 text-4xl font-bold text-center text-gray-700 font-title">
@@ -34,16 +54,33 @@ export const Auth: React.FC = () => {
 
         <button
           type="button"
-          className="flex-1 mt-6 button button-secondary"
-          onClick={handleSingIn}
+          className="flex-1 mt-6 button button-primary"
+          onClick={() => handleSingIn(new GoogleAuthProvider())}
           disabled={isLoading}
         >
-          <FcGoogle />
-
-          <span className="hidden mx-2 sm:inline">Entrar com Google</span>
+          <FaGoogle />
+          <span className="hidden sm:inline">Entrar com Google</span>
+        </button>
+        <button
+          type="button"
+          className="flex-1 mt-4 button button-primary"
+          onClick={() => handleSingIn(new GithubAuthProvider())}
+          disabled={isLoading}
+        >
+          <FaGithub />
+          <span className="hidden sm:inline">Entrar com GitHub</span>
+        </button>
+        <button
+          type="button"
+          className="flex-1 mt-4 button button-secondary"
+          onClick={() => handleSingIn()}
+          disabled={isLoading}
+        >
+          <FaUserSecret />
+          <span className="hidden sm:inline">Entrar como Anônimo</span>
         </button>
 
-        <p className="mt-6 text-xs font-light text-center text-gray-400">
+        <p className="mt-6 text-xs font-light text-center text-gray-600">
           Seus dados estão seguros!
         </p>
       </div>

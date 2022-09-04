@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import toast from 'react-hot-toast';
 import React, { useState } from 'react';
 import { FiSend } from 'react-icons/fi';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../hooks/use-auth';
 import { addSong } from '../libs/songs';
@@ -18,11 +19,12 @@ const songSchema = Yup.object().shape({
     .required('O link é obrigatório'),
 });
 
-export const AddSongForm: React.FC<AddSongFormProps> = ({poolId}) => {
+export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
+  const location = useLocation();
 
-  const { isAuthenticated, signIn, signOut, user } = useAuth();
+  const { isAuthenticated, signOut, user } = useAuth();
 
   async function handleSendSong(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,9 +98,13 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({poolId}) => {
         ) : (
           <p className="text-sm font-light text-slate-700">
             Você não está conectado.{' '}
-            <button className="underline text-slate-900" type="button" onClick={() => signIn()}>
+            <Link
+              to="/auth"
+              className="underline text-slate-900"
+              state={{ callbackUrl: location.pathname }}
+            >
               Fazer login
-            </button>
+            </Link>
             .
           </p>
         )}
