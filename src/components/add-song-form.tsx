@@ -1,10 +1,14 @@
 import * as Yup from 'yup';
+import toast from 'react-hot-toast';
 import React, { useState } from 'react';
 import { FiSend } from 'react-icons/fi';
 
 import { useAuth } from '../hooks/use-auth';
-import toast from 'react-hot-toast';
-import { saveSong } from '../services/song';
+import { addSong } from '../libs/pools';
+
+interface AddSongFormProps {
+  poolId: string;
+}
 
 const songSchema = Yup.object().shape({
   title: Yup.string().required('O título é obrigatório'),
@@ -14,7 +18,7 @@ const songSchema = Yup.object().shape({
     .required('O link é obrigatório'),
 });
 
-export const SendSongForm: React.FC = () => {
+export const AddSongForm: React.FC<AddSongFormProps> = ({poolId}) => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
 
@@ -31,7 +35,7 @@ export const SendSongForm: React.FC = () => {
         url,
       });
 
-      await saveSong({ ...song, sender: user! });
+      await addSong(poolId, { ...song, sender: user! });
 
       toast.success('Sugestão enviada com sucesso!');
 

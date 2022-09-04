@@ -2,15 +2,11 @@ import { createContext, useEffect, useState } from 'react';
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
 import { auth } from '../services/firebase';
-
-export interface User {
-  id: string;
-  name: string;
-  avatarUrl: string | null;
-}
+import { User } from '../typings';
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: User | null;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -22,20 +18,22 @@ interface AuthContextProviderProps {
 
 export const authContext = createContext({} as AuthContextType);
 
+const googleProvider = new GoogleAuthProvider();
+
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
+  const [isLoading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const provider = new GoogleAuthProvider();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (state) => {
-      if (state) {
+      setLoading(false);
+      if (!state) setUser(null);
+      else {
         setUser({
           id: state.uid,
           avatarUrl: state.photoURL,
           name: state.displayName || 'Unknown',
         });
-      } else {
-        setUser(null);
       }
     });
 
@@ -43,7 +41,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ childr
   }, []);
 
   async function handleSignIn() {
-    signInWithPopup(auth, provider)
+    await signInWithPopup(auth, googleProvider)
       .then(({ user }) =>
         setUser({
           id: user.uid,
@@ -55,14 +53,20 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ childr
   }
 
   async function handleSignOut() {
-    signOut(auth)
+    await signOut(auth)
       .then(() => setUser(null))
       .catch((error) => console.log(error));
   }
 
   return (
     <authContext.Provider
-      value={{ isAuthenticated: !!user, user, signIn: handleSignIn, signOut: handleSignOut }}
+      value={{
+        isAuthenticated: !!user,
+        isLoading,
+        user,
+        signIn: handleSignIn,
+        signOut: handleSignOut,
+      }}
     >
       {children}
     </authContext.Provider>

@@ -1,82 +1,84 @@
-import { child, get, push, query, ref, remove } from 'firebase/database';
+export {};
 
-import { User } from '../contexts/auth-context';
-import { database } from './firebase';
+// import { child, get, push, query, ref, remove } from 'firebase/database';
 
-interface SongLikes {
-  [key: string]: string;
-}
+// import { User } from '../contexts/auth-context';
+// import { database } from './firebase';
 
-interface BaseSong {
-  title: string;
-  url: string;
-  sender: User;
-}
+// interface SongLikes {
+//   [key: string]: string;
+// }
 
-interface RawSong extends BaseSong {
-  likes?: SongLikes;
-}
+// interface BaseSong {
+//   title: string;
+//   url: string;
+//   sender: User;
+// }
 
-interface RawSongs {
-  [key: string]: RawSong;
-}
+// interface RawSong extends BaseSong {
+//   likes?: SongLikes;
+// }
 
-export interface Song extends BaseSong {
-  id: string;
-  likeCount: number;
-  likeId?: string /** @todo replace by liked boolean */;
-}
+// interface RawSongs {
+//   [key: string]: RawSong;
+// }
 
-type CreateSongInput = Omit<Song, 'id'>;
+// export interface Song extends BaseSong {
+//   id: string;
+//   likeCount: number;
+//   likeId?: string /** @todo replace by liked boolean */;
+// }
 
-const rootRef = ref(database);
+// type CreateSongInput = Omit<Song, 'id'>;
 
-function mapRawSongToSong(id: string, song: RawSong, userId?: string): Song {
-  const userLike = userId && Object.entries(song.likes || {}).find(([, value]) => value === userId);
+// const rootRef = ref(database);
 
-  const mappedSong: Song = {
-    id,
-    ...song,
-    likeCount: Object.keys(song.likes || {}).length,
-    likeId: userLike && userLike[0],
-  };
+// function mapRawSongToSong(id: string, song: RawSong, userId?: string): Song {
+//   const userLike = userId && Object.entries(song.likes || {}).find(([, value]) => value === userId);
 
-  delete song.likes;
+//   const mappedSong: Song = {
+//     id,
+//     ...song,
+//     likeCount: Object.keys(song.likes || {}).length,
+//     likeId: userLike && userLike[0],
+//   };
 
-  return mappedSong;
-}
+//   delete song.likes;
 
-async function getSongs(userId?: string, page = 1): Promise<Song[]> {
-  const songsRef = child(rootRef, 'songs');
-  const songsQuery = query(songsRef);
+//   return mappedSong;
+// }
 
-  const songs = await get(songsQuery).then((snapshot) => {
-    if (snapshot.exists()) return snapshot.val() as RawSongs;
-    return {};
-  });
+// async function getSongs(userId?: string, page = 1): Promise<Song[]> {
+//   const songsRef = child(rootRef, 'songs');
+//   const songsQuery = query(songsRef);
 
-  return Object.entries(songs).map(([key, value]) => mapRawSongToSong(key, value, userId));
-}
+//   const songs = await get(songsQuery).then((snapshot) => {
+//     if (snapshot.exists()) return snapshot.val() as RawSongs;
+//     return {};
+//   });
 
-async function saveSong(song: CreateSongInput): Promise<void> {
-  const songsRef = child(rootRef, 'songs');
+//   return Object.entries(songs).map(([key, value]) => mapRawSongToSong(key, value, userId));
+// }
 
-  push(songsRef, song);
-}
+// async function saveSong(song: CreateSongInput): Promise<void> {
+//   const songsRef = child(rootRef, 'songs');
 
-async function toggleFavoriteSong(songId: string, userId?: string, likeId?: string) {
-  const isAddingLike = !likeId;
-  const songLikesRef = child(rootRef, `songs/${songId}/likes`);
+//   push(songsRef, song);
+// }
 
-  if (isAddingLike) {
-    if (!userId) throw new Error('User id must be defined when creating like');
+// async function toggleFavoriteSong(songId: string, userId?: string, likeId?: string) {
+//   const isAddingLike = !likeId;
+//   const songLikesRef = child(rootRef, `songs/${songId}/likes`);
 
-    await push(songLikesRef, userId);
+//   if (isAddingLike) {
+//     if (!userId) throw new Error('User id must be defined when creating like');
 
-    return;
-  }
+//     await push(songLikesRef, userId);
 
-  await remove(child(songLikesRef, likeId));
-}
+//     return;
+//   }
 
-export { getSongs, saveSong, toggleFavoriteSong };
+//   await remove(child(songLikesRef, likeId));
+// }
+
+// export { getSongs, saveSong, toggleFavoriteSong };
