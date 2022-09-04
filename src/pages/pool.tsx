@@ -1,4 +1,3 @@
-import { Transition } from '@headlessui/react';
 import { useState } from 'react';
 import { FiSend, FiX } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
@@ -6,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { Modal } from '../components/modal';
 import { AddSongForm } from '../components/add-song-form';
 import { usePool } from '../hooks/use-pool';
-import { Loading } from './loading';
+import { Loading } from '../components/loading';
 import { SongCard } from '../components/song-card';
 
 export const Pool: React.FC = () => {
@@ -17,20 +16,7 @@ export const Pool: React.FC = () => {
   const { isLoading, pool, songs } = usePool(id!);
 
   if (isLoading) {
-    return (
-      <Transition
-        show={isLoading}
-        className="fixed inset-0"
-        enter="transition duration-100 ease-out"
-        enterFrom="transform opacity-0"
-        enterTo="transform opacity-100"
-        leave="transition duration-75 ease-out"
-        leaveFrom="transform opacity-100"
-        leaveTo="transform opacity-0"
-      >
-        <Loading />
-      </Transition>
-    );
+    return <Loading isLoading={isLoading} />;
   }
 
   /** @todo improve pool not found feedback */
