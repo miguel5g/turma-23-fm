@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { FiSend, FiX } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
+import HappyMusicImage from '../assets/happy-music.svg';
 import { Modal } from '../components/modal';
 import { AddSongForm } from '../components/add-song-form';
 import { usePool } from '../hooks/use-pool';
 import { Loading } from '../components/loading';
 import { SongCard } from '../components/song-card';
+import { PoolNotFound } from '../components/pool-not-found';
 
 export const Pool: React.FC = () => {
   const [isSongModalOpen, setSongModalOpen] = useState(false);
@@ -19,8 +21,7 @@ export const Pool: React.FC = () => {
     return <Loading isLoading={isLoading} />;
   }
 
-  /** @todo improve pool not found feedback */
-  if (!pool) return <p>Sala não encontrada</p>;
+  if (!pool) return <PoolNotFound />;
 
   return (
     <div className="flex justify-center min-h-screen px-6 bg-gray-50">
@@ -53,15 +54,25 @@ export const Pool: React.FC = () => {
           </Modal>
         </header>
 
-        <ul className="mt-8 space-y-4">
-          {/** @todo improve empty songs list feedback */}
-
-          {songs.map((song) => (
-            <li key={song.id}>
-              <SongCard poolId={pool.id} song={song} />
-            </li>
-          ))}
-        </ul>
+        {songs.length > 0 ? (
+          <ul className="mt-8 space-y-4">
+            {songs.map((song) => (
+              <li key={song.id}>
+                <SongCard poolId={pool.id} song={song} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="mt-8 flex flex-col py-8 flex-1 text-center items-center justify-center">
+            <img src={HappyMusicImage} alt="Pessoa feliz ouvindo música" className="max-h-48" />
+            <h2 className="text-4xl text-slate-900 font-title font-bold mt-8">
+              Nenhuma sugestão por aqui
+            </h2>
+            <p className="font-light text-slate-600">
+              Seja o primeiro a enviar uma sugestão de música
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
