@@ -1,17 +1,8 @@
 import { get, ref } from 'firebase/database';
 
 import { database } from '../services/firebase';
-import { Pool, RawPool, RawSong, Song } from '../typings';
-
-function mapRawSongs(songId: string, song: RawSong): Song {
-  return {
-    id: songId,
-    title: song.title,
-    url: song.url,
-    sender: song.sender,
-    likeCount: Object.keys(song.likes || {}).length,
-  };
-}
+import { Pool, RawPool } from '../typings';
+import { mapRawSongs } from './songs';
 
 async function getPool(id: string): Promise<Pool | null> {
   const poolRef = ref(database, `pools/${id}`);
@@ -34,4 +25,4 @@ async function getPool(id: string): Promise<Pool | null> {
   return pool;
 }
 
-export { getPool, mapRawSongs };
+export { getPool };

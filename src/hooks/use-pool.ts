@@ -2,8 +2,9 @@ import { onValue, ref } from 'firebase/database';
 import { useEffect, useState } from 'react';
 
 import { Pool, RawSong, Song } from '../typings';
-import { getPool, mapRawSongs } from '../libs/pools';
+import { getPool } from '../libs/pools';
 import { database } from '../services/firebase';
+import { mapRawSongs } from '../libs/songs';
 
 interface UsePoolType {
   pool: Omit<Pool, 'songs'> | null;
