@@ -1,18 +1,21 @@
 import { createContext, useEffect, useState } from 'react';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import {
+  AuthProvider,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithPopup,
+  signOut,
+  User as AuthUser,
+} from 'firebase/auth';
 
 import { auth } from '../services/firebase';
-
-export interface User {
-  id: string;
-  name: string;
-  avatarUrl: string | null;
-}
+import { User } from '../typings';
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: User | null;
-  signIn: () => Promise<void>;
+  signIn: (provider?: AuthProvider) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -23,46 +26,52 @@ interface AuthContextProviderProps {
 export const authContext = createContext({} as AuthContextType);
 
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
+  const [isLoading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const provider = new GoogleAuthProvider();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (state) => {
-      if (state) {
-        setUser({
-          id: state.uid,
-          avatarUrl: state.photoURL,
-          name: state.displayName || 'Unknown',
-        });
-      } else {
-        setUser(null);
-      }
+      setLoading(false);
+
+      if (!state) setUser(null);
+      else successfullyAuth(state);
     });
 
     return () => unsubscribe();
   }, []);
 
-  async function handleSignIn() {
-    signInWithPopup(auth, provider)
-      .then(({ user }) =>
-        setUser({
-          id: user.uid,
-          avatarUrl: user.photoURL,
-          name: user.displayName || 'Unknown',
-        })
-      )
-      .catch((error) => console.log(error));
+  function successfullyAuth(user: AuthUser) {
+    setUser({
+      id: user.uid,
+      avatarUrl: user.photoURL,
+      name: user.displayName || 'Anônimo',
+    });
+  }
+
+  async function handleSignIn(provider?: AuthProvider) {
+    if (!provider) {
+      await signInAnonymously(auth).then(({ user }) => successfullyAuth(user));
+      return;
+    }
+
+    await signInWithPopup(auth, provider).then(({ user }) => successfullyAuth(user));
   }
 
   async function handleSignOut() {
-    signOut(auth)
+    await signOut(auth)
       .then(() => setUser(null))
       .catch((error) => console.log(error));
   }
 
   return (
     <authContext.Provider
-      value={{ isAuthenticated: !!user, user, signIn: handleSignIn, signOut: handleSignOut }}
+      value={{
+        isAuthenticated: !!user,
+        isLoading,
+        user,
+        signIn: handleSignIn,
+        signOut: handleSignOut,
+      }}
     >
       {children}
     </authContext.Provider>

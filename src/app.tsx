@@ -1,13 +1,13 @@
 import { Toaster } from 'react-hot-toast';
 
 import { AuthContextProvider } from './contexts/auth-context';
-import { Home } from './pages/home';
+import { AppRoutes } from './routes';
 
 export const App: React.FC = () => {
   return (
     <AuthContextProvider>
       <Toaster />
-      <Home />
+      <AppRoutes />
     </AuthContextProvider>
   );
 };
