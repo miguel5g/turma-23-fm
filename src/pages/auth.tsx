@@ -44,7 +44,7 @@ export const Auth: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 px-5">
       <div className="flex flex-col w-full max-w-md m-auto">
         <img src={PodcastAudienceImage} alt="Pessoas ouvindo um podcast" className=" max-h-32" />
 
@@ -59,7 +59,7 @@ export const Auth: React.FC = () => {
           disabled={isLoading}
         >
           <FaGoogle />
-          <span className="hidden sm:inline">Entrar com Google</span>
+          <span>Entrar com Google</span>
         </button>
         <button
           type="button"
@@ -68,7 +68,7 @@ export const Auth: React.FC = () => {
           disabled={isLoading}
         >
           <FaGithub />
-          <span className="hidden sm:inline">Entrar com GitHub</span>
+          <span>Entrar com GitHub</span>
         </button>
         <button
           type="button"
@@ -77,7 +77,7 @@ export const Auth: React.FC = () => {
           disabled={isLoading}
         >
           <FaUserSecret />
-          <span className="hidden sm:inline">Entrar como Anônimo</span>
+          <span>Entrar como Anônimo</span>
         </button>
 
         <p className="mt-6 text-xs font-light text-center text-gray-600">

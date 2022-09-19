@@ -17,9 +17,7 @@ export const Pool: React.FC = () => {
 
   const { isLoading, pool, songs } = usePool(id!);
 
-  if (isLoading) {
-    return <Loading isLoading={isLoading} />;
-  }
+  if (isLoading) return <Loading isLoading={isLoading} />;
 
   if (!pool) return <PoolNotFound />;
 

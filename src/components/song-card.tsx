@@ -38,31 +38,35 @@ export const SongCard: React.FC<SongCardProps> = ({ poolId, song }) => {
         />
       )}
 
-      <div className="flex gap-2 mt-2">
-        <img
-          className="object-cover w-8 h-8 my-auto rounded-full"
-          src={song.sender.avatarUrl || 'https://dummyimage.com/32x32'}
-          alt={song.sender.name}
-        />
-        <p className="my-auto text-sm font-light text-slate-600">{song.sender.name}</p>
-        <a
-          className="ml-auto button button-secondary w-max"
-          href={song.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FiYouTube />
-          <span>YouTube</span>
-        </a>
-        <button
-          type="button"
-          className="button button-secondary"
-          onClick={handleToggleLike}
-          disabled={!isAuthenticated || isLikeButtonDisabled}
-        >
-          <FiThumbsUp />
-          <span>{song.likeCount}</span>
-        </button>
+      <div className="flex flex-col md:flex-row gap-2 mt-2">
+        <div className="flex gap-2">
+          <img
+            className="object-cover w-8 h-8 my-auto rounded-full"
+            src={song.sender.avatarUrl || 'https://dummyimage.com/32x32'}
+            alt={song.sender.name}
+          />
+          <p className="my-auto text-sm font-light text-slate-600">{song.sender.name}</p>
+        </div>
+        <div className='flex gap-2 md:ml-auto'>
+          <a
+            className="button button-secondary w-full md:w-max"
+            href={song.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FiYouTube />
+            <span>YouTube</span>
+          </a>
+          <button
+            type="button"
+            className="button button-secondary w-max"
+            onClick={handleToggleLike}
+            disabled={!isAuthenticated || isLikeButtonDisabled}
+          >
+            <FiThumbsUp />
+            <span>{song.likeCount}</span>
+          </button>
+        </div>
       </div>
     </div>
   );

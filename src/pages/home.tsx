@@ -52,7 +52,7 @@ export const Home: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center min-h-screen py-8 bg-gray-50 md:py-12">
+    <div className="flex justify-center min-h-screen py-8 bg-gray-50 md:py-12 px-5">
       <div className="flex flex-col justify-center w-full max-w-lg">
         <h1 className="text-5xl font-bold text-slate-900 font-title">Entrar/Criar</h1>
         <p className="font-light text-slate-600">

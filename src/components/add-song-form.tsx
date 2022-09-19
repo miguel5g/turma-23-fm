@@ -76,7 +76,7 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
         onChange={(event) => setUrl(event.target.value)}
       />
 
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex md:items-center justify-between mt-4 flex-col-reverse md:flex-row">
         {user ? (
           <div className="flex gap-2">
             <img
@@ -109,7 +109,7 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
           </p>
         )}
 
-        <button className="button button-primary" type="submit" disabled={!isAuthenticated}>
+        <button className="button button-primary mb-2 md:mb-0 w-full md:w-max" type="submit" disabled={!isAuthenticated}>
           <FiSend />
           <span>Enviar</span>
         </button>
