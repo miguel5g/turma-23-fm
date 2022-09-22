@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiSend, FiX } from 'react-icons/fi';
+import { FiSend, FiX, FiCopy } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
 import HappyMusicImage from '../assets/happy-music.svg';
@@ -9,13 +9,25 @@ import { usePool } from '../hooks/use-pool';
 import { Loading } from '../components/loading';
 import { SongCard } from '../components/song-card';
 import { PoolNotFound } from '../components/pool-not-found';
+import toast from 'react-hot-toast';
 
 export const Pool: React.FC = () => {
   const [isSongModalOpen, setSongModalOpen] = useState(false);
 
   const { id } = useParams();
-
   const { isLoading, pool, songs } = usePool(id!);
+
+  async function handleCopyPoolId() {
+    if (!id) {
+      toast.error('Não consegui encontrar o id da sala');
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(id)
+      .then(() => toast.success('Copiado com sucesso'))
+      .catch(() => toast.error('Algo deu errado'));
+  }
 
   if (isLoading) return <Loading isLoading={isLoading} />;
 
@@ -25,7 +37,17 @@ export const Pool: React.FC = () => {
     <div className="flex justify-center min-h-screen px-6 bg-gray-50">
       <div className="flex flex-col w-full max-w-lg py-6 md:py-8">
         <header className="flex flex-col">
-          <h1 className="text-4xl font-bold font-title">{pool.title}</h1>
+          <section className="flex gap-4 items-center">
+            <h1 className="text-4xl font-bold font-title flex-1 truncate">{pool.title}</h1>
+            <button
+              type="button"
+              className="button border border-dashed border-indigo-300 hover:border-indigo-400 text-sm"
+              onClick={handleCopyPoolId}
+            >
+              <FiCopy className='text-indigo-900' />
+              <span>Copiar Código</span>
+            </button>
+          </section>
 
           <button
             type="button"
