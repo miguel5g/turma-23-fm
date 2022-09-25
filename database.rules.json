@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "pools": {
+      ".read": false,
+      ".write": false,
+      "$poolId": {
+        ".read": true,
+        ".write": "auth != null && (!data.exists() || data.child('owner/id').val() == auth.uid)",
+        "songs": {
+          ".read": true,
+          ".write": "auth != null && !data.exists()",
+          "$songId": {
+            ".read": true,
+            ".write": "auth != null && !data.exists()",
+            "likes": {
+              ".read": true,
+              ".write": false,
+              "$likeId": {
+                ".read": true,
+                ".write": "auth != null && (!data.exists() || $likeId == auth.uid)"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
