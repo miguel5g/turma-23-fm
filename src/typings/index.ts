@@ -11,8 +11,10 @@ interface RawSongLikes {
 export interface RawSong {
   title: string;
   url: string;
-  likes?: RawSongLikes;
-  likeCount?: number;
+  likes?: {
+    count?: number;
+    users?: RawSongLikes;
+  };
   sender: User;
 }
 
@@ -25,7 +27,6 @@ export interface Song {
   title: string;
   url: string;
   likeCount: number;
-  // isLiked: boolean;
   sender: User;
 }
 

@@ -11,7 +11,7 @@ function mapRawSongs(songId: string, song: RawSong): Song {
     title: song.title,
     url: song.url,
     sender: song.sender,
-    likeCount: song.likeCount || 0,
+    likeCount: song.likes?.count || 0,
   };
 }
 
@@ -22,25 +22,32 @@ async function addSong(poolId: string, song: SongInput): Promise<void> {
 }
 
 async function toggleSongLike(poolId: string, songId: string, userId: string): Promise<void> {
-  const songRef = ref(database, `pools/${poolId}/songs/${songId}`);
+  const songRef = ref(database, `pools/${poolId}/songs/${songId}/likes`);
 
-  await runTransaction(songRef, (song: RawSong) => {
-    if (!song) return song;
-
-    if (song.likes && song.likes[userId]) {
-      song.likeCount = (song.likeCount || 1) - 1;
-      delete song.likes[userId];
-
-      return song;
+  await runTransaction(songRef, (songLikes: RawSong['likes']) => {
+    if (!songLikes) {
+      return {
+        count: 1,
+        users: {
+          [userId]: true,
+        },
+      };
     }
 
-    song.likeCount = (song.likeCount || 0) + 1;
-    song.likes = {
-      ...(song.likes || {}),
+    if (songLikes.users && songLikes.users[userId]) {
+      songLikes.count = (songLikes.count || 1) - 1;
+      delete songLikes.users[userId];
+
+      return songLikes;
+    }
+
+    songLikes.count = (songLikes.count || 0) + 1;
+    songLikes.users = {
+      ...(songLikes.users || {}),
       [userId]: true,
     };
 
-    return song;
+    return songLikes;
   });
 }
 
