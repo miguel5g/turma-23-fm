@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "start:dev": "vite",
+    "start:preview": "vite preview",
+    "start:emulators": "firebase emulators:start",
+    "start:emulator:database": "firebase emulators:start --only database",
+    "start:emulator:auth": "firebase emulators:start --only auth",
     "build": "tsc && vite build",
-    "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
