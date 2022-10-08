@@ -47,6 +47,12 @@ cp .env.example .env.local
 
 _OBS: Preencher com suas variáveis de ambiente do firebase_
 
+4. Executar projeto
+
+```bash
+npm run start:dev
+```
+
 ## :sparkles: Contribuições
 
 Contribuições são sempre bem-vindas!
