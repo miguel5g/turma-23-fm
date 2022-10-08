@@ -17,7 +17,7 @@
               ".write": false,
               "$likeId": {
                 ".read": true,
-                ".write": "auth != null && (!data.exists() || $likeId == auth.uid)"
+                ".write": "auth != null && $likeId == auth.uid"
               }
             }
           }

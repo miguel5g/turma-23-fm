@@ -1,6 +1,6 @@
 import { type FirebaseOptions, initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
+import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: import.meta.env.VITE_APP_API_KEY,
@@ -16,4 +16,7 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const database = getDatabase(app);
 
-if (process.env.NODE_ENV === 'development') connectAuthEmulator(auth, 'http://localhost:9099');
+if (process.env.NODE_ENV === 'development') {
+  connectAuthEmulator(auth, 'http://localhost:9099');
+  connectDatabaseEmulator(database, 'localhost', 9000);
+}
