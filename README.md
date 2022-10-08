@@ -14,13 +14,13 @@ Um local para você compartilhar e votar naquelas músicas que você mais gosta!
 
 Tecnologias e ferramentas que foram utilizadas para desenvolver este projeto:
 
-- [ReactJS]()
-- [ViteJS]()
-- [Vitest]()
-- [TypeScript]()
-- [TailwindCSS]()
-- [Firebase]()
-- [GitHub Actions]()
+- [ReactJS](https://reactjs.org/)
+- [ViteJS](https://vitejs.dev/)
+- [Vitest](https://vitest.dev/)
+- [TypeScript](https://typescriptlang.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [Firebase](https://firebase.google.com/)
+- [GitHub Actions](https://github.com/features/actions)
 
 ## :books: Instalação
 
@@ -45,7 +45,7 @@ npm install
 cp .env.example .env.local
 ```
 
-_Preencher com suas variáveis de ambiente do firebase_
+_OBS: Preencher com suas variáveis de ambiente do firebase_
 
 ## :sparkles: Contribuições
 
