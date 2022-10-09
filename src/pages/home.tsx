@@ -1,23 +1,32 @@
 import toast from 'react-hot-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiLogIn, FiPlus, FiUser } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { push, ref } from 'firebase/database';
 
+import AccessAccountImage from '../assets/access-account.svg';
+import HappyMusicImage from '../assets/happy-music.svg';
 import { Form, FormButton, FormInput } from '../components/home-form';
 import { Pool } from '../typings';
 import { useAuth } from '../hooks/use-auth';
 import { database } from '../services/firebase';
 import { EventTypes, registerEvent } from '../libs/analytics';
+import { getUserPools } from '../libs/pools';
+import { PoolCard } from '../components/pool-card';
 
 type PoolInput = Omit<Pool, 'id' | 'songs'>;
 
 export const Home: React.FC = () => {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
+  const [userPools, setUserPools] = useState<Pool[] | null>(null);
 
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) getUserPools(user.id).then(setUserPools);
+  }, [user]);
 
   function handleJoinPool() {
     /** @todo improve validation with RegEx */
@@ -55,9 +64,44 @@ export const Home: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center min-h-screen py-8 bg-gray-50 md:py-12 px-5">
-      <div className="flex flex-col justify-center w-full max-w-lg">
-        <h1 className="text-5xl font-bold text-slate-900 font-title">Entrar/Criar</h1>
+    <div className="relative flex flex-col-reverse items-center justify-center min-h-screen gap-12 px-5 py-12 bg-gray-50 md:py-16 lg:flex-row lg:items-start">
+      <div className="w-full max-w-lg">
+        <h2 className="text-5xl font-bold text-slate-900 font-title">Suas salas</h2>
+        {userPools && userPools.length > 0 && (
+          <ul className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+            {(userPools || []).map((pool) => (
+              <li key={pool.id}>
+                <PoolCard pool={pool} />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {userPools && userPools.length === 0 && (
+          <div className="flex flex-col items-center justify-center flex-1 py-8 mt-8 text-center">
+            <img src={HappyMusicImage} alt="Pessoa feliz ouvindo música" className="max-h-48" />
+            <h2 className="mt-8 text-4xl font-bold text-slate-900 font-title">
+              Você ainda não criou nenhum sala
+            </h2>
+            <p className="font-light text-slate-600">Crie uma sala e ela vai aparecer aqui</p>
+          </div>
+        )}
+
+        {!userPools && (
+          <div className="flex flex-col items-center justify-center flex-1 py-8 mt-8 text-center">
+            <img src={AccessAccountImage} alt="Tela de autenticação" className="max-h-48" />
+            <h2 className="mt-8 text-4xl font-bold text-slate-900 font-title">
+              Acesse sua conta para ver suas salas
+            </h2>
+            <p className="font-light text-slate-600">
+              Após acessar sua conta você verá todas as suas salas criadas aqui
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col w-full max-w-lg lg:top-16 lg:sticky">
+        <h2 className="text-5xl font-bold text-slate-900 font-title">Entrar/Criar</h2>
         <p className="font-light text-slate-600">
           Escolha músicas de forma democrática, deixe o público votar
         </p>
