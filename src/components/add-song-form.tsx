@@ -10,6 +10,7 @@ import { EventTypes, registerEvent } from '../libs/analytics';
 
 interface AddSongFormProps {
   poolId: string;
+  onSuccessfullySendSong?: () => void;
 }
 
 const songSchema = Yup.object().shape({
@@ -20,7 +21,7 @@ const songSchema = Yup.object().shape({
     .required('O link é obrigatório'),
 });
 
-export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
+export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId, onSuccessfullySendSong }) => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const location = useLocation();
@@ -46,6 +47,8 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
 
       setTitle('');
       setUrl('');
+
+      if (onSuccessfullySendSong) onSuccessfullySendSong();
     } catch (error) {
       if (error instanceof Yup.ValidationError) toast.error(error.message);
       else toast.error('Algo deu errado...');

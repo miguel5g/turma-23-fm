@@ -65,7 +65,7 @@ export const Pool: React.FC = () => {
             isOpen={isSongModalOpen}
             onClose={() => setSongModalOpen(false)}
           >
-            <AddSongForm poolId={id!} />
+            <AddSongForm poolId={id!} onSuccessfullySendSong={() => setSongModalOpen(false)} />
             <button
               type="button"
               className="absolute p-2 text-2xl transition-colors text-slate-600 hover:text-slate-900 top-4 right-4"
