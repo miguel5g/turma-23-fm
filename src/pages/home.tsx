@@ -50,7 +50,7 @@ export const Home: React.FC = () => {
 
     const poolId = push(poolsRef, newPool).key;
 
-    registerEvent(EventTypes.JOIN_POOL, { pool_id: poolId });
+    registerEvent(EventTypes.CREATE_POOL, { pool_id: poolId });
     navigate(`/pools/${poolId}`);
   }
 
