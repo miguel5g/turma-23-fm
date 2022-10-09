@@ -1,8 +1,9 @@
 {
   "rules": {
     "pools": {
-      ".read": false,
+      ".read": "auth != null",
       ".write": false,
+      ".indexOn": "owner/id",
       "$poolId": {
         ".read": true,
         ".write": "auth != null && (!data.exists() || data.child('owner/id').val() == auth.uid)",
