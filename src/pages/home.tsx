@@ -8,6 +8,7 @@ import { Form, FormButton, FormInput } from '../components/home-form';
 import { Pool } from '../typings';
 import { useAuth } from '../hooks/use-auth';
 import { database } from '../services/firebase';
+import { EventTypes, registerEvent } from '../libs/analytics';
 
 type PoolInput = Omit<Pool, 'id' | 'songs'>;
 
@@ -25,6 +26,7 @@ export const Home: React.FC = () => {
       return;
     }
 
+    registerEvent(EventTypes.JOIN_POOL, { pool_id: code });
     navigate(`/pools/${code}`);
   }
 
@@ -48,6 +50,7 @@ export const Home: React.FC = () => {
 
     const poolId = push(poolsRef, newPool).key;
 
+    registerEvent(EventTypes.CREATE_POOL, { pool_id: poolId });
     navigate(`/pools/${poolId}`);
   }
 

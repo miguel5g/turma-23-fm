@@ -6,6 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../hooks/use-auth';
 import { addSong } from '../libs/songs';
+import { EventTypes, registerEvent } from '../libs/analytics';
 
 interface AddSongFormProps {
   poolId: string;
@@ -37,7 +38,9 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
         url,
       });
 
-      await addSong(poolId, { ...song, sender: user! });
+      await addSong(poolId, { ...song, sender: user! }).then(() =>
+        registerEvent(EventTypes.SEND_SONG, { pool_id: poolId })
+      );
 
       toast.success('Sugestão enviada com sucesso!');
 
@@ -47,6 +50,10 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
       if (error instanceof Yup.ValidationError) toast.error(error.message);
       else toast.error('Algo deu errado...');
     }
+  }
+
+  function handleSignOut() {
+    signOut().then(() => registerEvent(EventTypes.LOGOUT));
   }
 
   return (
@@ -89,7 +96,7 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
               <button
                 className="-mt-1 text-sm text-red-600 underline w-max"
                 type="button"
-                onClick={() => signOut()}
+                onClick={handleSignOut}
               >
                 Desconectar
               </button>
@@ -109,7 +116,11 @@ export const AddSongForm: React.FC<AddSongFormProps> = ({ poolId }) => {
           </p>
         )}
 
-        <button className="button button-primary mb-2 md:mb-0 w-full md:w-max" type="submit" disabled={!isAuthenticated}>
+        <button
+          className="button button-primary mb-2 md:mb-0 w-full md:w-max"
+          type="submit"
+          disabled={!isAuthenticated}
+        >
           <FiSend />
           <span>Enviar</span>
         </button>

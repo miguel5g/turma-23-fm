@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { FiSend, FiX, FiCopy } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
@@ -9,7 +10,7 @@ import { usePool } from '../hooks/use-pool';
 import { Loading } from '../components/loading';
 import { SongCard } from '../components/song-card';
 import { PoolNotFound } from '../components/pool-not-found';
-import toast from 'react-hot-toast';
+import { EventTypes, registerEvent } from '../libs/analytics';
 
 export const Pool: React.FC = () => {
   const [isSongModalOpen, setSongModalOpen] = useState(false);
@@ -26,6 +27,7 @@ export const Pool: React.FC = () => {
     navigator.clipboard
       .writeText(id)
       .then(() => toast.success('Copiado com sucesso'))
+      .then(() => registerEvent(EventTypes.COPY_POOL_CODE, { pool_id: id }))
       .catch(() => toast.error('Algo deu errado'));
   }
 
@@ -44,7 +46,7 @@ export const Pool: React.FC = () => {
               className="button border border-dashed border-indigo-300 hover:border-indigo-400 text-sm"
               onClick={handleCopyPoolId}
             >
-              <FiCopy className='text-indigo-900' />
+              <FiCopy className="text-indigo-900" />
               <span>Copiar Código</span>
             </button>
           </section>

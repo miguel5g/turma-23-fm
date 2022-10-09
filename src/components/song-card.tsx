@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FiThumbsUp, FiYoutube as FiYouTube } from 'react-icons/fi';
 
 import { useAuth } from '../hooks/use-auth';
+import { EventTypes, registerEvent } from '../libs/analytics';
 import { toggleSongLike } from '../libs/songs';
 import { getIdFromUrl } from '../libs/video-url';
 import { Song } from '../typings';
@@ -22,7 +23,9 @@ export const SongCard: React.FC<SongCardProps> = ({ poolId, song }) => {
 
     setLikeButtonDisabled(true);
 
-    toggleSongLike(poolId, song.id, user.id).finally(() => setLikeButtonDisabled(false));
+    toggleSongLike(poolId, song.id, user.id)
+      .then(() => registerEvent(EventTypes.TOGGLE_SONG_LIKE, { pool_id: poolId, song_id: song.id }))
+      .finally(() => setLikeButtonDisabled(false));
   }
 
   return (
@@ -47,12 +50,15 @@ export const SongCard: React.FC<SongCardProps> = ({ poolId, song }) => {
           />
           <p className="my-auto text-sm font-light text-slate-600">{song.sender.name}</p>
         </div>
-        <div className='flex gap-2 md:ml-auto'>
+        <div className="flex gap-2 md:ml-auto">
           <a
             className="button button-secondary w-full md:w-max"
             href={song.url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              registerEvent(EventTypes.OPEN_ON_YOUTUBE, { pool_id: poolId, song_id: song.id })
+            }
           >
             <FiYouTube />
             <span>YouTube</span>

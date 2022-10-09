@@ -12,6 +12,7 @@ import { FirebaseError } from 'firebase/app';
 
 import PodcastAudienceImage from '../assets/podcast-audience.svg';
 import { useAuth } from '../hooks/use-auth';
+import { EventTypes, registerEvent } from '../libs/analytics';
 
 export const Auth: React.FC = () => {
   const [isLoading, setLoading] = useState(false);
@@ -29,6 +30,12 @@ export const Auth: React.FC = () => {
     setLoading(true);
 
     signIn(provider)
+      .then(() =>
+        registerEvent(EventTypes.LOGIN, {
+          from: callbackUrl,
+          provider: provider?.providerId || 'anonymous',
+        })
+      )
       .then(() => navigate(callbackUrl || '/', { replace: !!callbackUrl }))
       .catch((error: unknown) => {
         if (!(error instanceof FirebaseError)) return toast.error('Algo deu errado...');
